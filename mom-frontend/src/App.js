@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Meetings from "./pages/Meetings";
 import Tasks from "./pages/Tasks";
 import Settings from "./pages/Settings";
+import ViewMeeting from "./pages/ViewMeeting";
 
 function App() {
 
@@ -23,6 +24,8 @@ function App() {
         <Route path="/tasks" element={<Tasks />} />
 
         <Route path="/settings" element={<Settings />} />
+
+        <Route path="/meetings/:id" element={<ViewMeeting />} />
 
       </Routes>
 
