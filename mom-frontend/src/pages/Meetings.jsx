@@ -2,8 +2,10 @@ import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
 import { useState, useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
 function Meetings() {
+   const navigate = useNavigate();
+
 
   const defaultMeetings = [
     {
@@ -340,7 +342,12 @@ function Meetings() {
 
                 </div>
 
-                <button className="text-green-600 font-medium">
+               <button
+                  onClick={() =>
+                    navigate(`/meetings/${meeting.id}`)
+                  }
+                  className="text-green-600 font-medium"
+                >
                   Open
                 </button>
 
