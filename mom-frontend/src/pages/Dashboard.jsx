@@ -4,15 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 import { stats, meetings} from "../data/mockData";
 
-import { useContext } from "react";
-import { UserContext } from "../context/UserContext";
 
 function Dashboard() {
 
-  const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const savedTasks =
     JSON.parse(localStorage.getItem("tasks")) || [];
+    const displayName =
+  (localStorage.getItem("username") || "")
+    .split("@")[0];
 
   return (
     <div className="flex min-h-screen bg-[#edf4f1]">
@@ -32,7 +32,7 @@ function Dashboard() {
             <div>
 
               <h1 className="text-5xl font-bold">
-                Welcome back, {user.name}
+                Welcome back, {displayName}
               </h1>
 
               <p className="text-gray-500 mt-2">
