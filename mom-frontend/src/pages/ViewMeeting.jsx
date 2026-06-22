@@ -1,4 +1,3 @@
-
 import {
   useEffect,
   useState,
@@ -14,10 +13,6 @@ import Topbar from "../components/Topbar";
 import SummaryCard from "../components/SummaryCard";
 import TranscriptViewer from "../components/TranscriptViewer";
 
-// import {
-//   getSummary,
-// } from "../services/api";
-
 function ViewMeeting() {
 
   const { id } =
@@ -25,73 +20,92 @@ function ViewMeeting() {
 
   const [summary, setSummary] =
     useState(null);
-  const [recording, setRecording] = useState(false);
 
-  const [audioFile, setAudioFile] = useState(null);
+  const [meetingStatus, setMeetingStatus] =
+    useState("Recording");
+
+  const [uploadedFileName, setUploadedFileName] =
+    useState("");
 
   useEffect(() => {
 
-  setSummary({
-    title: "Demo Meeting",
+    setSummary({
+      title: "Demo Meeting",
 
-    summary:
-      "This is a test summary.",
+      summary:
+        "This is a test summary generated from the meeting recording.",
 
-    transcript:
-      "Meeting transcript appears here.",
+      transcript:
+        "Meeting transcript appears here. Backend transcription will be displayed in this section.",
 
-    decisions: [
-      "Launch next week"
-    ],
+      decisions: [
+        "Launch next week",
+        "Review dashboard design"
+      ],
 
-    action_items: [
-      {
-        task: "Deploy frontend",
-        owner: "Purushothaman",
-        deadline: "Jun 15"
-      }
-    ]
-  });
+      action_items: [
+        {
+          task: "Deploy frontend",
+          owner: "Purushothaman",
+          deadline: "Jun 15"
+        },
+        {
+          task: "Connect backend APIs",
+          owner: "Backend Team",
+          deadline: "Jun 18"
+        }
+      ]
+    });
 
-}, [id]);
-  const startRecording = () => {
+  }, [id]);
 
-  setRecording(true);
+  useEffect(() => {
 
-  alert("Recording Started");
-};
+    const interval =
+      setInterval(() => {
 
-const stopRecording = () => {
+        setMeetingStatus(
+          localStorage.getItem(
+            "meeting_status"
+          ) || "Stopped"
+        );
 
-  setRecording(false);
+        setUploadedFileName(
+          localStorage.getItem(
+            "uploaded_file"
+          ) || ""
+        );
 
-  alert("Recording Stopped");
-};
+      }, 1000);
 
-const uploadAudio = () => {
+    return () =>
+      clearInterval(interval);
 
-  if (!audioFile) {
-    alert("Select audio file");
-    return;
-  }
+  }, []);
 
-  alert("Audio Uploaded");
-};
+  const generateSummary = () => {
 
-const generateSummary = () => {
+    alert(
+      "AI Summary Generation API will be connected by backend."
+    );
 
-  alert("Generating AI Summary...");
-};
+  };
 
   if (!summary) {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-semibold">
-        Loading Meeting...
-      </h1>
-    </div>
-  );
-}
+
+    return (
+
+      <div className="flex items-center justify-center min-h-screen">
+
+        <h1 className="text-2xl font-semibold">
+          Loading Meeting...
+        </h1>
+
+      </div>
+
+    );
+
+  }
 
   return (
 
@@ -105,98 +119,77 @@ const generateSummary = () => {
 
         <div className="p-10">
 
+          {/* Meeting Title */}
+
           <h1 className="text-5xl font-bold">
 
             {summary.title}
 
           </h1>
+
+          {/* Meeting Status */}
+
           <div className="bg-white rounded-3xl p-6 mt-8">
 
-  <h2 className="text-2xl font-semibold mb-4">
-    Meeting Controls
-  </h2>
-<p className="mb-4 text-gray-500">
-  Status:
+            <h2 className="text-2xl font-bold">
+              Meeting Status
+            </h2>
 
-  <span
-    className={
-      recording
-        ? "text-green-600 font-semibold ml-2"
-        : "text-red-500 font-semibold ml-2"
-    }
-  >
-    {recording ? "Recording" : "Stopped"}
-  </span>
+            <p className="mt-4">
 
-</p>
-  <div className="flex gap-4">
+              Status:
 
-    <button
-      onClick={startRecording}
-      className="bg-green-600 text-white px-5 py-3 rounded-xl"
-    >
-      Start Recording
-    </button>
+              <span
+                className={
+                  meetingStatus === "Recording"
+                    ? "text-green-600 font-bold ml-2"
+                    : "text-red-500 font-bold ml-2"
+                }
+              >
 
-    <button
-      onClick={stopRecording}
-      className="bg-red-500 text-white px-5 py-3 rounded-xl"
-    >
-      Stop Recording
-    </button>
+                {meetingStatus}
 
-  </div>
+              </span>
 
-</div>
-<div className="bg-white rounded-3xl p-6 mt-6">
+            </p>
 
-  <h2 className="text-2xl font-semibold mb-4">
-    Upload Audio
-  </h2>
+            {uploadedFileName && (
 
-  <div className="flex gap-4 items-center">
+              <p className="mt-4 text-gray-600">
 
-    <input
-      type="file"
-      accept=".mp3,.wav,.webm"
-      onChange={(e) =>
-        setAudioFile(e.target.files[0])
-      }
-    />
-    {audioFile && (
+                Uploaded Audio:
 
-  <p className="text-gray-500">
-    Selected: {audioFile.name}
-  </p>
+                <span className="font-semibold ml-2">
 
-)}
+                  {uploadedFileName}
 
-    <button
-      onClick={uploadAudio}
-      className="bg-blue-600 text-white px-5 py-3 rounded-xl"
-    >
-      Upload
-    </button>
+                </span>
 
-  </div>
+              </p>
 
-</div>
+            )}
 
-          <div className="grid grid-cols-2 gap-6 mt-10">
-<div className="mt-6 mb-6">
+          </div>
 
-  <button
-    onClick={generateSummary}
-    className="bg-purple-600 text-white px-6 py-3 rounded-xl"
-  >
-    Generate AI Summary
-  </button>
+          {/* Generate Summary */}
 
-</div>
+          <div className="mt-6 mb-6">
 
-<div className="grid grid-cols-2 gap-6 mt-6">
+            <button
+              onClick={generateSummary}
+              className="bg-purple-600 text-white px-6 py-3 rounded-xl"
+            >
 
-</div>
+              Generate AI Summary
+
+            </button>
+
+          </div>
+
+          {/* Summary + Decisions */}
+
+          <div className="grid grid-cols-2 gap-6 mt-6">
+
             <SummaryCard
               title="Summary"
               content={summary.summary}
@@ -211,6 +204,8 @@ const generateSummary = () => {
 
           </div>
 
+          {/* Transcript */}
+
           <div className="mt-10">
 
             <TranscriptViewer
@@ -220,6 +215,8 @@ const generateSummary = () => {
             />
 
           </div>
+
+          {/* Action Items */}
 
           <div className="bg-white rounded-3xl p-6 mt-10">
 
@@ -237,20 +234,16 @@ const generateSummary = () => {
                   className="border-b py-4"
                 >
 
-                  <p>
+                  <p className="font-medium">
                     {item.task}
                   </p>
 
                   <p className="text-gray-500">
-
                     {item.owner}
-
                   </p>
 
                   <p className="text-gray-500">
-
                     {item.deadline}
-
                   </p>
 
                 </div>
@@ -267,6 +260,7 @@ const generateSummary = () => {
     </div>
 
   );
+
 }
 
 export default ViewMeeting;
