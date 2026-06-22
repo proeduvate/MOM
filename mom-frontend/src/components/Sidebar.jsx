@@ -2,7 +2,8 @@ import {
   FaTachometerAlt,
   FaTasks,
   FaCog,
-  FaUsers
+  FaUsers,
+  FaExternalLinkAlt
 } from "react-icons/fa";
 
 import { Link, useLocation } from "react-router-dom";
@@ -25,7 +26,7 @@ function Sidebar() {
 
       <div className="p-4 space-y-3">
 
-        <Link to="/" className={navItem("/")}>
+        <Link to="/dashboard" className={navItem("/dashboard")}>
           <FaTachometerAlt />
           Dashboard
         </Link>
@@ -38,6 +39,11 @@ function Sidebar() {
         <Link to="/tasks" className={navItem("/tasks")}>
           <FaTasks />
           Tasks
+        </Link>
+
+         <Link to="/extension" className={navItem("/extension")}>
+          <FaExternalLinkAlt />
+          Extension
         </Link>
 
         <Link to="/settings" className={navItem("/settings")}>

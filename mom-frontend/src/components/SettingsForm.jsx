@@ -9,10 +9,27 @@ function SettingsForm() {
 
   const handleSave = () => {
 
-    setUser(form);
-
-    alert("Settings Saved!");
+  const updatedUser = {
+    ...form,
   };
+
+  setUser(updatedUser);
+
+  localStorage.setItem(
+    "username",
+    form.name
+  );
+
+  localStorage.setItem(
+    "email",
+    form.email
+  );
+
+  alert("Profile Updated");
+
+  window.location.reload();
+
+};
 
   return (
     <div className="bg-white p-8 rounded-3xl mt-10">
@@ -26,7 +43,7 @@ function SettingsForm() {
         <input
           type="text"
           value={form.name}
-          placeholder="Full Name"
+          placeholder="Username"
           onChange={(e) =>
             setForm({
               ...form,
