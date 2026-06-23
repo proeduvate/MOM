@@ -14,38 +14,59 @@ function Login() {
 
   const handleLogin = () => {
 
-    if (
-      password ===
-      "1122334455"
-    ) {
+  const savedUsername =
+    localStorage.getItem(
+      "registeredUsername"
+    );
 
-     const displayName =
-        username.includes("@")
-            ? username.split("@")[0]
-            : username;
+  const savedEmail =
+    localStorage.getItem(
+      "registeredEmail"
+    );
 
-        localStorage.setItem(
-        "username",
-        displayName
-        );
+  const savedPassword =
+    localStorage.getItem(
+      "registeredPassword"
+    );
 
-        localStorage.setItem(
-        "email",
-        username
-        );
+  if (
 
-      navigate("/Dashboard");
+    (
+      username ===
+      savedUsername ||
 
-    } else {
+      username ===
+      savedEmail
+    )
 
-      alert(
-        "Invalid Password"
-      );
+    &&
 
-    }
+    password ===
+    savedPassword
 
-  };
+  ) {
 
+    localStorage.setItem(
+      "username",
+      savedUsername
+    );
+
+    localStorage.setItem(
+      "email",
+      savedEmail
+    );
+
+    navigate("/dashboard");
+
+  } else {
+
+    alert(
+      "Invalid Credentials"
+    );
+
+  }
+
+};
   return (
 
     <div className="flex items-center justify-center min-h-screen bg-[#edf4f1]">
@@ -58,29 +79,25 @@ function Login() {
 
         </h1>
 
-        <input
+       <input
           type="text"
-          placeholder="Email"
-          className="w-full border p-3 rounded-xl mb-4"
+          placeholder="admin@example.com / Username"
           value={username}
           onChange={(e) =>
-            setUsername(
-              e.target.value
-            )
+            setUsername(e.target.value)
           }
+          className="w-full border p-3 rounded-xl mb-4"
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full border p-3 rounded-xl mb-6"
-          value={password}
-          onChange={(e) =>
-            setPassword(
-              e.target.value
-            )
-          }
-        />
+       <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+            className="w-full border p-3 rounded-xl mb-6"
+          />
 
         <button
           onClick={handleLogin}
@@ -88,6 +105,21 @@ function Login() {
         >
           Login
         </button>
+
+        <p className="text-center mt-4">
+
+          Don't have an account?
+
+          <span
+            onClick={() =>
+              navigate("/register")
+            }
+            className="text-green-600 cursor-pointer ml-2 font-semibold"
+          >
+            Register
+          </span>
+
+        </p>
 
       </div>
 

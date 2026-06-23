@@ -86,7 +86,7 @@ function ViewMeeting() {
   const generateSummary = () => {
 
     alert(
-      "AI Summary Generation API will be connected by backend."
+      "AI Summary Generating."
     );
 
   };
