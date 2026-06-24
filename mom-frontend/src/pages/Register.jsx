@@ -2,77 +2,74 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [username, setUsername] =
-    useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [email, setEmail] =
-    useState("");
+  const navigate = useNavigate();
 
-  const [password, setPassword] =
-    useState("");
+  const handleRegister = async () => {
+    // 🔒 prevent multiple clicks
+    if (loading) return;
 
-  const [confirmPassword,
-    setConfirmPassword] =
-    useState("");
-
-  const navigate =
-    useNavigate();
-
-  const handleRegister = () => {
-
-    if (
-      !username ||
-      !email ||
-      !password
-    ) {
-
-      alert(
-        "Please fill all fields"
-      );
-
+    if (!username || !email || !password || !confirmPassword) {
+      alert("Please fill all fields");
       return;
     }
 
-    if (
-      password !==
-      confirmPassword
-    ) {
-
-      alert(
-        "Passwords do not match"
-      );
-
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
       return;
     }
 
-    localStorage.setItem(
-      "registeredUsername",
-      username
-    );
+    try {
+      setLoading(true);
 
-    localStorage.setItem(
-      "registeredEmail",
-      email
-    );
+      const response = await fetch(
+        "http://localhost:8000/api/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            confirm_password: confirmPassword,
+          }),
+        }
+      );
 
-    localStorage.setItem(
-      "registeredPassword",
-      password
-    );
+      const data = await response.json();
 
-    alert(
-      "Registration Successful"
-    );
+      if (response.ok) {
+        alert("Registration Successful");
 
-    navigate("/");
+        // store user session
+        localStorage.setItem("username", username);
+        localStorage.setItem("email", email);
 
+        // prevent double navigation issues
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 300);
+      } else {
+        alert(data.detail || "Registration Failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server Error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-
     <div className="flex items-center justify-center min-h-screen bg-[#edf4f1]">
-
       <div className="bg-white p-10 rounded-3xl shadow-lg w-[450px]">
 
         <h1 className="text-4xl font-bold mb-8 text-center">
@@ -83,11 +80,7 @@ function Register() {
           type="text"
           placeholder="Username"
           value={username}
-          onChange={(e) =>
-            setUsername(
-              e.target.value
-            )
-          }
+          onChange={(e) => setUsername(e.target.value)}
           className="w-full border p-3 rounded-xl mb-4"
         />
 
@@ -95,11 +88,7 @@ function Register() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) =>
-            setEmail(
-              e.target.value
-            )
-          }
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full border p-3 rounded-xl mb-4"
         />
 
@@ -107,11 +96,7 @@ function Register() {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) =>
-            setPassword(
-              e.target.value
-            )
-          }
+          onChange={(e) => setPassword(e.target.value)}
           className="w-full border p-3 rounded-xl mb-4"
         />
 
@@ -119,27 +104,23 @@ function Register() {
           type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
-          onChange={(e) =>
-            setConfirmPassword(
-              e.target.value
-            )
-          }
+          onChange={(e) => setConfirmPassword(e.target.value)}
           className="w-full border p-3 rounded-xl mb-6"
         />
 
         <button
           onClick={handleRegister}
-          className="w-full bg-green-600 text-white p-3 rounded-xl"
+          disabled={loading}
+          className={`w-full p-3 rounded-xl text-white ${
+            loading ? "bg-gray-400" : "bg-green-600"
+          }`}
         >
-          Register
+          {loading ? "Registering..." : "Register"}
         </button>
 
       </div>
-
     </div>
-
   );
-
 }
 
 export default Register;

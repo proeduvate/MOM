@@ -2,131 +2,112 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [username, setUsername] =
-    useState("");
+  const navigate = useNavigate();
 
-  const [password, setPassword] =
-    useState("");
+  const handleLogin = async () => {
+    // prevent multiple clicks
+    if (loading) return;
 
-  const navigate =
-    useNavigate();
+    if (!username || !password) {
+      alert("Please fill all fields");
+      return;
+    }
 
-  const handleLogin = () => {
+    try {
+      setLoading(true);
 
-  const savedUsername =
-    localStorage.getItem(
-      "registeredUsername"
-    );
+      const response = await fetch(
+        "http://localhost:8000/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // backend accepts email OR username depending on your API
+            email: username,
+            password: password,
+          }),
+        }
+      );
 
-  const savedEmail =
-    localStorage.getItem(
-      "registeredEmail"
-    );
+      const data = await response.json();
 
-  const savedPassword =
-    localStorage.getItem(
-      "registeredPassword"
-    );
+      if (response.ok) {
+        alert("Login Successful");
 
-  if (
+        // store session data
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("email", data.email);
 
-    (
-      username ===
-      savedUsername ||
+        // safe redirect
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 300);
+      } else {
+        alert(data.detail || "Invalid Credentials");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server Error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      username ===
-      savedEmail
-    )
-
-    &&
-
-    password ===
-    savedPassword
-
-  ) {
-
-    localStorage.setItem(
-      "username",
-      savedUsername
-    );
-
-    localStorage.setItem(
-      "email",
-      savedEmail
-    );
-
-    navigate("/dashboard");
-
-  } else {
-
-    alert(
-      "Invalid Credentials"
-    );
-
-  }
-
-};
   return (
-
     <div className="flex items-center justify-center min-h-screen bg-[#edf4f1]">
 
       <div className="bg-white p-10 rounded-3xl shadow-lg w-[400px]">
 
         <h1 className="text-4xl font-bold mb-8 text-center">
-
           MoM Assistant
-
         </h1>
 
-       <input
+        <input
           type="text"
-          placeholder="admin@example.com / Username"
+          placeholder="Email / Username"
           value={username}
-          onChange={(e) =>
-            setUsername(e.target.value)
-          }
+          onChange={(e) => setUsername(e.target.value)}
           className="w-full border p-3 rounded-xl mb-4"
         />
 
-       <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            className="w-full border p-3 rounded-xl mb-6"
-          />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border p-3 rounded-xl mb-6"
+        />
 
         <button
           onClick={handleLogin}
-          className="w-full bg-green-600 text-white p-3 rounded-xl"
+          disabled={loading}
+          className={`w-full p-3 rounded-xl text-white ${
+            loading ? "bg-gray-400" : "bg-green-600"
+          }`}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p className="text-center mt-4">
-
           Don't have an account?
 
           <span
-            onClick={() =>
-              navigate("/register")
-            }
+            onClick={() => navigate("/register")}
             className="text-green-600 cursor-pointer ml-2 font-semibold"
           >
             Register
           </span>
-
         </p>
 
       </div>
-
     </div>
-
   );
-
 }
 
 export default Login;
