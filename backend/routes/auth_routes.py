@@ -13,7 +13,7 @@ router = APIRouter()
 @router.post("/api/auth/register")
 def register(user: RegisterRequest):
 
-    # ✅ FIXED FIELD NAME
+    # FIXED FIELD NAME
     if user.password != user.confirm_password:
         raise HTTPException(
             status_code=400,
