@@ -1,63 +1,66 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
+const loginLock = useRef(false);
 
-  const handleLogin = async () => {
-    // prevent multiple clicks
-    if (loading) return;
+const handleLogin = async () => {
+  //  HARD BLOCK (instant, no React delay issue)
+  if (loginLock.current) return;
 
-    if (!username || !password) {
-      alert("Please fill all fields");
-      return;
-    }
+  if (!username || !password) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  loginLock.current = true;
+  setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:8000/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            // backend accepts email OR username depending on your API
-            email: username,
-            password: password,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Login Successful");
-
-        // store session data
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("email", data.email);
-
-        // safe redirect
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 300);
-      } else {
-        alert(data.detail || "Invalid Credentials");
+  try {
+    const response = await fetch(
+      "http://localhost:8000/api/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username,
+          password: password,
+        }),
       }
-    } catch (error) {
-      console.error(error);
-      alert("Server Error");
-    } finally {
-      setLoading(false);
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Login Successful");
+
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("email", data.email);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 300);
+    } else {
+      alert(data.detail || "Invalid Credentials");
     }
-  };
+
+  } catch (error) {
+    console.error(error);
+    alert("Server Error");
+
+  } finally {
+    setLoading(false);
+    loginLock.current = false; // unlock
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#edf4f1]">
