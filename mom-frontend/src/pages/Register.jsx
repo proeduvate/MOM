@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
+
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -10,63 +12,66 @@ function Register() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+const registerLock = useRef(false);
 
-  const handleRegister = async () => {
-    // 🔒 prevent multiple clicks
-    if (loading) return;
+const handleRegister = async () => {
+  // 🔒 HARD BLOCK (instant, no delay issue)
+  if (registerLock.current) return;
 
-    if (!username || !email || !password || !confirmPassword) {
-      alert("Please fill all fields");
-      return;
-    }
+  if (!username || !email || !password || !confirmPassword) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  registerLock.current = true;
+  setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:8000/api/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username,
-            email,
-            password,
-            confirm_password: confirmPassword,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Registration Successful");
-
-        // store user session
-        localStorage.setItem("username", username);
-        localStorage.setItem("email", email);
-
-        // prevent double navigation issues
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 300);
-      } else {
-        alert(data.detail || "Registration Failed");
+  try {
+    const response = await fetch(
+      "http://localhost:8000/api/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          confirm_password: confirmPassword,
+        }),
       }
-    } catch (error) {
-      console.error(error);
-      alert("Server Error");
-    } finally {
-      setLoading(false);
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Registration Successful");
+
+      localStorage.setItem("username", username);
+      localStorage.setItem("email", email);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 300);
+    } else {
+      alert(data.detail || "Registration Failed");
     }
-  };
+
+  } catch (error) {
+    console.error(error);
+    alert("Server Error");
+
+  } finally {
+    setLoading(false);
+    registerLock.current = false; // unlock
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#edf4f1]">
