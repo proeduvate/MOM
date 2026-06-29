@@ -3,7 +3,12 @@ from fastapi import (
     UploadFile,
     File,
     HTTPException,
-    Header
+    Depends
+)
+
+from fastapi.security import (
+    HTTPBearer,
+    HTTPAuthorizationCredentials
 )
 
 from database import audio_collection
@@ -15,27 +20,18 @@ import shutil
 
 router = APIRouter()
 
-UPLOAD_FOLDER = "uploads"
+security = HTTPBearer()
 
+UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @router.post("/api/meetings/upload-audio")
 def upload_audio(
     file: UploadFile = File(...),
-    authorization: str = Header(None)
+    credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
-
-    if not authorization:
-        raise HTTPException(
-            status_code=401,
-            detail="Authorization token missing"
-        )
-
-    token = authorization.replace(
-        "Bearer ",
-        ""
-    )
+    token = credentials.credentials
 
     payload = verify_token(token)
 
@@ -51,10 +47,7 @@ def upload_audio(
     )
 
     with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(
-            file.file,
-            buffer
-        )
+        shutil.copyfileobj(file.file, buffer)
 
     audio_collection.insert_one({
         "username": payload["username"],
