@@ -1,19 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "MoM Recorder",
+  "name": "MoM Meeting Recorder",
   "version": "1.0",
-
+  "description": "Capture meeting audio for Minutes of Meeting",
   "permissions": [
     "storage",
     "activeTab",
-    "scripting",
-    "tabCapture"
+    "tabs",
+    "tabCapture",
+    "scripting"
   ],
-
   "host_permissions": [
     "http://localhost:5000/*"
   ],
-
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html"
   }
