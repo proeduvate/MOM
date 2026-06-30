@@ -44,6 +44,7 @@ const handleLogin = async () => {
 
   localStorage.setItem("username", data.username);
   localStorage.setItem("email", data.email);
+  localStorage.setItem("token", data.token);   // <-- ADD THIS
 
   setTimeout(() => {
     navigate("/dashboard");
