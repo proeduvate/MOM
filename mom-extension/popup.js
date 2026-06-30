@@ -175,30 +175,12 @@ document.addEventListener(
           }
 
         } catch (err) {
+    console.error("Recording Error:", err.name);
+    console.error("Message:", err.message);
+    console.error(err);
 
-          console.error(err);
-
-          // Demo mode only
-
-          if (!recording) {
-
-            recording = true;
-
-            status.innerText =
-              "Recording Meeting...";
-
-            startBtn.innerText =
-              "Stop Recording";
-
-            startBtn.style.background =
-              "#ef4444";
-
-            localStorage.setItem(
-              "meeting_status",
-              "Recording"
-            );
-
-          }
+    status.textContent = "Status : Unable to record";
+}
 
         }
 
