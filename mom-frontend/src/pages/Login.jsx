@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
@@ -39,16 +40,17 @@ const handleLogin = async () => {
 
     const data = await response.json();
 
-    if (response.ok) {
-      alert("Login Successful");
+  if (response.ok) {
+  alert("Login Successful");
 
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("email", data.email);
+  localStorage.setItem("username", data.username);
+  localStorage.setItem("email", data.email);
+  localStorage.setItem("token", data.token);   // <-- ADD THIS
 
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 300);
-    } else {
+  setTimeout(() => {
+    navigate("/dashboard");
+  }, 300);
+  } else {
       alert(data.detail || "Invalid Credentials");
     }
 
@@ -112,5 +114,4 @@ const handleLogin = async () => {
     </div>
   );
 }
-
 export default Login;
